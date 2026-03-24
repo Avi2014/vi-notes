@@ -48,32 +48,97 @@ npm run dev
 
 ---
 
-### ⏳ Feature #2: User Login and Registration
-**Status**: NOT STARTED
-**Timeline**: 2-3 days
-**Depends On**: Feature #1 ✓
+### ✅ Feature #2: User Login and Registration
+**Status**: COMPLETE ✓
+**Timeline**: ~2-3 days
+**Last Updated**: March 25, 2026
 
-#### What Will Be Implemented
-- [ ] User registration form
-- [ ] User login form
-- [ ] JWT token authentication
-- [ ] Password hashing with bcryptjs
-- [ ] Protected routes
-- [ ] Logout functionality
-- [ ] User context/state management
-- [ ] Form validation
-- [ ] Error handling
+#### What's Implemented
+- [x] User registration form with validation
+- [x] User login form with validation
+- [x] JWT token authentication (7-day expiration)
+- [x] Password hashing with bcryptjs (10 salt rounds)
+- [x] Protected routes wrapper component
+- [x] Logout functionality with context cleanup
+- [x] Auth context and useAuth hook
+- [x] Form validation (email format, password length, matching)
+- [x] Error handling with user-facing messages
+- [x] React Router integration for navigation
+- [x] localStorage token persistence
+- [x] Axios interceptors for Authorization header
 
-#### Planned Files
-- Backend: User model, Auth routes, Auth controller, Auth middleware
-- Frontend: LoginPage, RegisterPage, useAuth hook, Protected routes
+#### Files Created
+**Backend**:
+- `backend/src/models/User.ts` - Mongoose User schema with bcrypt
+- `backend/src/controllers/authController.ts` - Register/Login/getCurrentUser handlers
+- `backend/src/middleware/authMiddleware.ts` - JWT verification middleware
+- `backend/src/routes/auth.routes.ts` - Auth endpoints (/register, /login, /me)
+- Updated: `backend/src/server.ts` - Added connectDatabase() on startup
+- Updated: `backend/src/app.ts` - Added authRoutes to Express app
 
-#### Integration Points
-- Users must login before accessing editor (protected route)
-- Keystroke events linked to user
-- Session data linked to user
+**Frontend**:
+- `frontend/src/types/auth.ts` - TypeScript interfaces
+- `frontend/src/services/authService.ts` - Axios-based auth API client
+- `frontend/src/hooks/useAuth.ts` - Auth context provider and hook
+- `frontend/src/pages/LoginPage.tsx` - Login form component
+- `frontend/src/pages/RegisterPage.tsx` - Registration form component
+- `frontend/src/pages/AuthPages.css` - Authentication page styling
+- `frontend/src/components/ProtectedRoute.tsx` - Protected route wrapper
+- Updated: `frontend/src/App.tsx` - React Router setup with auth
+- Updated: `frontend/src/pages/EditorPage.tsx` - User header with logout
+- Updated: `frontend/src/pages/EditorPage.css` - Header styling
+- Updated: `frontend/package.json` - Added react-router-dom dependency
 
----
+**Documentation**:
+- `docs/FEATURE_2_AUTH.md` - Complete authentication documentation
+
+#### How to Test
+```bash
+# Start backend
+cd backend
+npm run dev
+# Should see "✓ Database connected" in logs
+
+# Terminal 2: Start frontend
+cd frontend
+npm run dev
+
+# Open http://localhost:5173
+# Should redirect to /login page
+# 1. Click "Create account" link
+# 2. Enter email and password
+# 3. Click "Create Account"
+# 4. Should redirect to /editor showing your email
+# 5. Click logout
+# 6. Should redirect back to /login
+# 7. Try logging in with same credentials
+```
+
+#### API Endpoints
+
+**Register User**
+```
+POST /api/auth/register
+Body: { "email": "user@example.com", "password": "password123" }
+Response: { "success": true, "data": { "token": "...", "user": { "id": "...", "email": "..." } } }
+```
+
+**Login User**
+```
+POST /api/auth/login
+Body: { "email": "user@example.com", "password": "password123" }
+Response: { "success": true, "data": { "token": "...", "user": { "id": "...", "email": "..." } } }
+```
+
+**Get Current User (Protected)**
+```
+GET /api/auth/me
+Headers: { "Authorization": "Bearer <token>" }
+Response: { "success": true, "data": { "user": { "id": "...", "email": "..." } } }
+```
+
+#### Next Up
+→ Feature #3: Capture Keystroke Timing
 
 ### ⏳ Feature #3: Capture Keystroke Timing
 **Status**: NOT STARTED

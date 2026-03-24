@@ -1,6 +1,7 @@
 import express, { Express } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import authRoutes from './routes/auth.routes.js';
 
 dotenv.config();
 
@@ -9,14 +10,9 @@ dotenv.config();
  * 
  * Initializes the Vi-Notes backend server with:
  * - CORS enabled for frontend communication
- * - JSON/URL-encoded body parsing
- * - Basic middleware setup
- * 
- * Additional routes will be added in subsequent features:
- * - Feature #2: Authentication routes
- * - Feature #3: Keystroke tracking routes
- * - Feature #4: Paste detection routes
- * - Feature #5: Session persistence routes
+ * - JSON body parsing
+ * - Authentication routes
+ * - Error handling middleware
  */
 
 const app: Express = express();
@@ -30,8 +26,12 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
+/**
+ * Routes
+ */
+
 // Health check endpoint
-app.get('/api/health', (req, res) => {
+app.get('/api/health', (_req, res) => {
   res.json({
     success: true,
     message: 'Vi-Notes backend is running',
@@ -39,14 +39,16 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Basic API response middleware for consistency
-app.use((req, res, next) => {
-  // Add response wrapper if needed
-  next();
-});
+// Authentication routes
+// POST   /api/auth/register - Register new user
+// POST   /api/auth/login    - Login user
+// GET    /api/auth/me       - Get current user (protected)
+app.use('/api/auth', authRoutes);
 
-// Error handling middleware
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+/**
+ * Error handling middleware
+ */
+app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error('Error:', err);
   res.status(err.status || 500).json({
     success: false,
@@ -55,8 +57,10 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   });
 });
 
-// 404 Handler
-app.use((req, res) => {
+/**
+ * 404 Handler
+ */
+app.use((_req, res) => {
   res.status(404).json({
     success: false,
     error: 'Endpoint not found',

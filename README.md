@@ -2,7 +2,7 @@
 
 **Vi-Notes** is an authenticity verification platform designed to distinguish genuine human-written content from AI-generated or AI-assisted text. The system focuses on analyzing **writing behavior** alongside **statistical and linguistic characteristics** of the text to establish reliable authorship verification.
 
-**Current Status**: 🚀 Feature #1 (Basic Writing Editor) - COMPLETE & READY FOR TESTING
+**Current Status**: 🚀 Feature #2 (User Login & Registration) - COMPLETE & READY FOR TESTING
 
 ---
 
@@ -19,7 +19,9 @@ cd backend
 npm install
 npm run dev
 
-# Open http://localhost:3000 in your browser
+# Open http://localhost:5173 in your browser
+# You'll be redirected to /login
+# Create an account or use test credentials
 ```
 
 → **Full Setup Guide**: [docs/SETUP.md](./docs/SETUP.md)
@@ -31,7 +33,7 @@ npm run dev
 | # | Feature | Status | Docs | Timeline |
 |---|---------|--------|------|----------|
 | 1 | Basic Writing Editor | ✅ Complete | [FEATURE_1_EDITOR.md](./docs/FEATURE_1_EDITOR.md) | 2-3 days |
-| 2 | User Login & Registration | ⏳ Planned | TBD | 2-3 days |
+| 2 | User Login & Registration | ✅ Complete | [FEATURE_2_AUTH.md](./docs/FEATURE_2_AUTH.md) | 2-3 days |
 | 3 | Keystroke Timing Capture | ⏳ Planned | TBD | 3-4 days |
 | 4 | Paste Detection | ⏳ Planned | TBD | 2 days |
 | 5 | Session Persistence | ⏳ Planned | TBD | 3-4 days |
