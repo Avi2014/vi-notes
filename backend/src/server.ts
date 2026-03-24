@@ -6,7 +6,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Load .env.local file
-dotenv.config({ path: path.resolve(__dirname, '../.env.local') });
+const envPath = path.resolve(__dirname, '../.env.local');
+console.log(`📁 Loading environment from: ${envPath}`);
+dotenv.config({ path: envPath });
+
+// Log JWT_SECRET for debugging
+const jwtSecret = process.env.JWT_SECRET || 'your_jwt_secret_here';
+console.log(`🔑 JWT_SECRET loaded: ${jwtSecret.substring(0, 20)}... (length: ${jwtSecret.length})`);
 
 import app from './app.js';
 import { connectDatabase } from './config/database.js';

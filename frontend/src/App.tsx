@@ -5,6 +5,8 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { EditorPage } from './pages/EditorPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
+import { DashboardPage } from './pages/DashboardPage';
+import { SessionDetailPage } from './pages/SessionDetailPage';
 
 /**
  * App Component
@@ -17,6 +19,8 @@ import { RegisterPage } from './pages/RegisterPage';
  * - /login: Login page (public)
  * - /register: Registration page (public)
  * - /editor: Text editor page (protected)
+ * - /dashboard: Sessions dashboard (protected)
+ * - /session/:sessionId: Session detail view (protected)
  */
 function App() {
   return (
@@ -31,6 +35,14 @@ function App() {
           <Route 
             path="/editor" 
             element={<ProtectedRoute element={<EditorPage />} />}
+          />
+          <Route 
+            path="/dashboard" 
+            element={<ProtectedRoute element={<DashboardPage />} />}
+          />
+          <Route 
+            path="/session/:sessionId" 
+            element={<ProtectedRoute element={<SessionDetailPage />} />}
           />
           
           {/* Default redirect to login */}

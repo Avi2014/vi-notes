@@ -9,7 +9,17 @@ import { AuthenticatedRequest } from '../middleware/authMiddleware.js';
  * Handles user registration, login, and authentication operations
  */
 
-const JWT_SECRET: string = process.env.JWT_SECRET || 'your_jwt_secret_here';
+/**
+ * Get JWT Secret (lazy evaluation - read from env when needed)
+ */
+const getJWTSecret = (): string => {
+  const secret = process.env.JWT_SECRET || 'your_jwt_secret_here';
+  if (!process.env.JWT_SECRET) {
+    console.warn(`⚠️ JWT_SECRET not set in environment! Using default.`);
+  }
+  return secret;
+};
+
 const JWT_EXPIRE: string = (process.env.JWT_EXPIRE || '7d') as string;
 
 /**
@@ -21,10 +31,13 @@ const JWT_EXPIRE: string = (process.env.JWT_EXPIRE || '7d') as string;
 const generateToken = (userId: string, email: string): string => {
   const tokenPayload = { userId, email };
   const tokenOptions: SignOptions = { expiresIn: JWT_EXPIRE as any };
+  const secret = getJWTSecret();
+  
+  console.log(`🔑 Generating JWT token with SECRET: ${secret.substring(0, 20)}... (length: ${secret.length})`);
   
   return jwt.sign(
     tokenPayload,
-    JWT_SECRET || 'default-secret',
+    secret,
     tokenOptions
   );
 };

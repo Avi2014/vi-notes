@@ -38,8 +38,11 @@ export const authMiddleware = (
   try {
     // Get token from Authorization header
     const authHeader = req.headers.authorization;
+    console.log(`🔐 Auth Middleware - Received request to ${req.method} ${req.path}`);
+    console.log(`   Authorization header: ${authHeader ? 'Present' : 'Missing'}`);
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.warn(`❌ Auth Middleware - Invalid or missing Authorization header`);
       res.status(401).json({
         success: false,
         error: 'No token provided or invalid format',
@@ -50,11 +53,15 @@ export const authMiddleware = (
 
     // Extract token (remove 'Bearer ' prefix)
     const token = authHeader.slice(7);
+    console.log(`   Token found: ${token.substring(0, 20)}...`);
 
     // Verify token with JWT secret
+    const jwtSecret = process.env.JWT_SECRET || 'your_jwt_secret_here';
+    console.log(`   Verifying with SECRET: ${jwtSecret.substring(0, 20)}... (length: ${jwtSecret.length})`);
+    
     const decoded = jwt.verify(
       token,
-      process.env.JWT_SECRET || 'your_jwt_secret_here'
+      jwtSecret
     ) as JWTPayload;
 
     // Attach user info to request
@@ -63,9 +70,11 @@ export const authMiddleware = (
       email: decoded.email
     };
 
+    console.log(`✓ Auth Middleware - Token validated for user: ${decoded.email}`);
     next();
   } catch (error: any) {
     if (error.name === 'TokenExpiredError') {
+      console.warn(`❌ Auth Middleware - Token expired`);
       res.status(401).json({
         success: false,
         error: 'Token expired',
@@ -75,6 +84,7 @@ export const authMiddleware = (
     }
 
     if (error.name === 'JsonWebTokenError') {
+      console.warn(`❌ Auth Middleware - Invalid token: ${error.message}`);
       res.status(401).json({
         success: false,
         error: 'Invalid token',
@@ -83,6 +93,7 @@ export const authMiddleware = (
       return;
     }
 
+    console.error(`❌ Auth Middleware - Unexpected error: ${error.message}`);
     res.status(500).json({
       success: false,
       error: 'Authentication error',

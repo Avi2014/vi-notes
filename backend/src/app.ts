@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import authRoutes from './routes/auth.routes.js';
 import keystrokeRoutes from './routes/keystroke.routes.js';
 import pasteRoutes from './routes/paste.routes.js';
+import sessionRoutes from './routes/session.routes.js';
 
 dotenv.config();
 
@@ -63,6 +64,15 @@ app.use('/api/keystrokes', keystrokeRoutes);
 // POST   /api/pastes         - Submit paste events (protected)
 // GET    /api/pastes/stats   - Get paste statistics (protected)
 app.use('/api/pastes', pasteRoutes);
+
+// Session management routes
+// POST   /api/sessions              - Create new session (protected)
+// GET    /api/sessions              - List all sessions (protected)
+// GET    /api/sessions/:sessionId   - Get session details (protected)
+// PUT    /api/sessions/:sessionId   - Update session (protected)
+// DELETE /api/sessions/:sessionId   - Delete session (protected)
+// GET    /api/sessions/:sessionId/stats - Get session stats (protected)
+app.use('/api/sessions', sessionRoutes);
 
 /**
  * Error handling middleware
