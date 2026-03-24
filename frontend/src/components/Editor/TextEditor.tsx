@@ -1,4 +1,5 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { useKeystrokeTracking } from '../../hooks/useKeystrokeTracking';
 import './TextEditor.css';
 
 interface TextEditorProps {
@@ -19,6 +20,22 @@ export const TextEditor: React.FC<TextEditorProps> = ({ onSave }) => {
   const [content, setContent] = useState<string>('');
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  
+  // Generate unique session ID for this editing session
+  const sessionIdRef = useRef<string>(
+    `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  );
+  
+  // Initialize keystroke tracking
+  const { attachListener } = useKeystrokeTracking(sessionIdRef.current);
+
+  // Attach keystroke listener when component mounts
+  useEffect(() => {
+    if (textareaRef.current) {
+      attachListener(textareaRef.current);
+    }
+  }, [attachListener]);
 
   // Calculate word count
   const wordCount = useCallback((text: string): number => {
@@ -72,6 +89,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({ onSave }) => {
       </div>
 
       <textarea
+        ref={textareaRef}
         className="editor-textarea"
         value={content}
         onChange={handleContentChange}

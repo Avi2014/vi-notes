@@ -2,6 +2,7 @@ import express, { Express } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.routes.js';
+import keystrokeRoutes from './routes/keystroke.routes.js';
 
 dotenv.config();
 
@@ -44,6 +45,11 @@ app.get('/api/health', (_req, res) => {
 // POST   /api/auth/login    - Login user
 // GET    /api/auth/me       - Get current user (protected)
 app.use('/api/auth', authRoutes);
+
+// Keystroke tracking routes
+// POST   /api/keystrokes         - Submit keystroke events (protected)
+// GET    /api/keystrokes/stats   - Get keystroke statistics (protected)
+app.use('/api/keystrokes', keystrokeRoutes);
 
 /**
  * Error handling middleware
