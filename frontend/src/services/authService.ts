@@ -51,8 +51,20 @@ authAPI.interceptors.response.use(
  * @returns Auth response with token and user
  */
 export const registerUser = async (email: string, password: string) => {
-  const response = await authAPI.post('/register', { email, password });
-  return response.data.data; // Extract the data property from response
+  try {
+    console.log(`📤 Registering user: ${email}`);
+    const response = await authAPI.post('/register', { email, password });
+    console.log('✅ Registration successful');
+    return response.data.data; // Extract the data property from response
+  } catch (error: any) {
+    console.error('❌ Registration failed:', error.message);
+    if (error.response?.data?.error) {
+      console.error('   Backend error:', error.response.data.error);
+    } else if (error.message === 'Network Error') {
+      console.error('   Network error - Is backend running on http://localhost:5001?');
+    }
+    throw error;
+  }
 };
 
 /**
@@ -62,8 +74,20 @@ export const registerUser = async (email: string, password: string) => {
  * @returns Auth response with token and user
  */
 export const loginUser = async (email: string, password: string) => {
-  const response = await authAPI.post('/login', { email, password });
-  return response.data.data; // Extract the data property from response
+  try {
+    console.log(`📤 Logging in user: ${email}`);
+    const response = await authAPI.post('/login', { email, password });
+    console.log('✅ Login successful');
+    return response.data.data; // Extract the data property from response
+  } catch (error: any) {
+    console.error('❌ Login failed:', error.message);
+    if (error.response?.data?.error) {
+      console.error('   Backend error:', error.response.data.error);
+    } else if (error.message === 'Network Error') {
+      console.error('   Network error - Is backend running on http://localhost:5001?');
+    }
+    throw error;
+  }
 };
 
 /**

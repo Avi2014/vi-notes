@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useKeystrokeTracking } from '../../hooks/useKeystrokeTracking';
+import { usePasteTracking } from '../../hooks/usePasteTracking';
 import './TextEditor.css';
 
 interface TextEditorProps {
@@ -20,6 +21,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({ onSave }) => {
   const [content, setContent] = useState<string>('');
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [pasteCount, setPasteCount] = useState<number>(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   
   // Generate unique session ID for this editing session
@@ -30,12 +32,8 @@ export const TextEditor: React.FC<TextEditorProps> = ({ onSave }) => {
   // Initialize keystroke tracking
   const { attachListener } = useKeystrokeTracking(sessionIdRef.current);
 
-  // Attach keystroke listener when component mounts
-  useEffect(() => {
-    if (textareaRef.current) {
-      attachListener(textareaRef.current);
-    }
-  }, [attachListener]);
+  // Initialize paste tracking
+  const { attachListener: attachPasteListener } = usePasteTracking(sessionIdRef.current);
 
   // Calculate word count
   const wordCount = useCallback((text: string): number => {
@@ -49,6 +47,15 @@ export const TextEditor: React.FC<TextEditorProps> = ({ onSave }) => {
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(e.target.value);
   };
+
+  // Handle paste events
+  const handlePaste = useCallback((event: ClipboardEvent) => {
+    const pastedText = event.clipboardData?.getData('text') || '';
+    if (pastedText.length > 0) {
+      setPasteCount(prev => prev + 1);
+      console.log(`✅ Paste detected and tracked! Total pastes: ${pasteCount + 1}`);
+    }
+  }, [pasteCount]);
 
   // Handle save
   const handleSave = useCallback(async () => {
@@ -64,6 +71,26 @@ export const TextEditor: React.FC<TextEditorProps> = ({ onSave }) => {
       setIsSaving(false);
     }
   }, [content, onSave]);
+
+  // Attach keystroke listener when component mounts
+  useEffect(() => {
+    if (textareaRef.current) {
+      attachListener(textareaRef.current);
+    }
+  }, [attachListener]);
+
+  // Attach paste listener when component mounts
+  useEffect(() => {
+    if (textareaRef.current) {
+      attachPasteListener(textareaRef.current);
+      // Also attach our counter
+      textareaRef.current.addEventListener('paste', handlePaste as EventListener);
+      
+      return () => {
+        textareaRef.current?.removeEventListener('paste', handlePaste as EventListener);
+      };
+    }
+  }, [attachPasteListener, handlePaste]);
 
   const characterCount = content.length;
   const words = wordCount(content);
@@ -106,6 +133,12 @@ export const TextEditor: React.FC<TextEditorProps> = ({ onSave }) => {
           <span className="stat-item">
             <span className="stat-label">Characters:</span>
             <span className="stat-value">{characterCount}</span>
+          </span>
+          <span className="stat-item">
+            <span className="stat-label">Pastes:</span>
+            <span className="stat-value" style={{ color: pasteCount > 0 ? '#667eea' : '#999' }}>
+              {pasteCount}
+            </span>
           </span>
         </div>
         <button 

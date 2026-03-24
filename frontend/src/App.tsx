@@ -13,10 +13,10 @@ import { RegisterPage } from './pages/RegisterPage';
  * Provides authentication context and routing for all pages.
  * 
  * Routes:
+ * - /: Home - redirects to /login (unauthenticated) or /editor (authenticated)
  * - /login: Login page (public)
  * - /register: Registration page (public)
  * - /editor: Text editor page (protected)
- * - /: Redirects to /editor
  */
 function App() {
   return (
@@ -33,11 +33,11 @@ function App() {
             element={<ProtectedRoute element={<EditorPage />} />}
           />
           
-          {/* Default redirect */}
-          <Route path="/" element={<Navigate to="/editor" replace />} />
+          {/* Default redirect to login */}
+          <Route path="/" element={<Navigate to="/login" replace />} />
           
-          {/* Catch all - redirect to editor */}
-          <Route path="*" element={<Navigate to="/editor" replace />} />
+          {/* Catch all - redirect to login */}
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

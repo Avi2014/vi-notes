@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.routes.js';
 import keystrokeRoutes from './routes/keystroke.routes.js';
+import pasteRoutes from './routes/paste.routes.js';
 
 dotenv.config();
 
@@ -20,7 +21,14 @@ const app: Express = express();
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: (origin, callback) => {
+    const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001', process.env.FRONTEND_URL];
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 
@@ -50,6 +58,11 @@ app.use('/api/auth', authRoutes);
 // POST   /api/keystrokes         - Submit keystroke events (protected)
 // GET    /api/keystrokes/stats   - Get keystroke statistics (protected)
 app.use('/api/keystrokes', keystrokeRoutes);
+
+// Paste detection routes
+// POST   /api/pastes         - Submit paste events (protected)
+// GET    /api/pastes/stats   - Get paste statistics (protected)
+app.use('/api/pastes', pasteRoutes);
 
 /**
  * Error handling middleware

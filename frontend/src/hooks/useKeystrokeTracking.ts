@@ -16,7 +16,7 @@ const BATCH_TIMEOUT = 10000; // Or after 10 seconds
 export const useKeystrokeTracking = (sessionId?: string) => {
   const eventsBuffer = useRef<KeystrokeEventData[]>([]);
   const lastKeystrokeRef = useRef<number>(Date.now());
-  const batchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const batchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isEnabledRef = useRef(true);
 
   /**
@@ -24,6 +24,14 @@ export const useKeystrokeTracking = (sessionId?: string) => {
    */
   const submitBatch = useCallback(async () => {
     if (eventsBuffer.current.length === 0) return;
+
+    // Check if user is authenticated - don't submit if no token
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      console.log('⏭️ Skipping keystroke submission (not authenticated)');
+      eventsBuffer.current = []; // Clear buffer
+      return;
+    }
 
     const eventsCopy = [...eventsBuffer.current];
     eventsBuffer.current = [];
