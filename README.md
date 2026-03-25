@@ -1,70 +1,8 @@
-# Vi-Notes 📝
+# Vi-Notes
 
 **Vi-Notes** is an authenticity verification platform designed to distinguish genuine human-written content from AI-generated or AI-assisted text. The system focuses on analyzing **writing behavior** alongside **statistical and linguistic characteristics** of the text to establish reliable authorship verification.
 
-**Current Status**: 🚀 Feature #2 (User Login & Registration) - COMPLETE & READY FOR TESTING
-
----
-
-## Quick Start
-
-```bash
-# Frontend (Terminal 1)
-cd frontend
-npm install
-npm run dev
-
-# Backend (Terminal 2)
-cd backend
-npm install
-npm run dev
-
-# Open http://localhost:5173 in your browser
-# You'll be redirected to /login
-# Create an account or use test credentials
-```
-
-→ **Full Setup Guide**: [docs/SETUP.md](./docs/SETUP.md)
-
----
-
-## Features Progress
-
-| # | Feature | Status | Docs | Timeline |
-|---|---------|--------|------|----------|
-| 1 | Basic Writing Editor | ✅ Complete | [FEATURE_1_EDITOR.md](./docs/FEATURE_1_EDITOR.md) | 2-3 days |
-| 2 | User Login & Registration | ✅ Complete | [FEATURE_2_AUTH.md](./docs/FEATURE_2_AUTH.md) | 2-3 days |
-| 3 | Keystroke Timing Capture | ⏳ Planned | TBD | 3-4 days |
-| 4 | Paste Detection | ⏳ Planned | TBD | 2 days |
-| 5 | Session Persistence | ⏳ Planned | TBD | 3-4 days |
-
-→ **Detailed Feature Status**: [FEATURES.md](./FEATURES.md)
-
----
-
-## Feature #1: Basic Writing Editor ✅
-
-A clean, distraction-free text editor for writing content.
-
-### Features
-- ✨ **Distraction-Free UI**: Minimal interface focused on writing
-- 📊 **Real-time Statistics**: Word count and character count
-- 💾 **Save Functionality**: Ready for backend integration
-- 🧹 **Clear Control**: Reset content with confirmation
-- 📱 **Responsive Design**: Works on desktop, tablet, and mobile
-- ♿ **Accessible**: Keyboard navigation and screen reader support
-
-### Quick Test
-1. Open http://localhost:3000
-2. Type some text in the editor
-3. Watch word/character counts update
-4. Click Save (logs to console in Feature #1)
-5. Click Clear to reset (with confirmation)
-
-### Documentation
-- [Feature Documentation](./docs/FEATURE_1_EDITOR.md) - Component architecture, styling, usage
-- [Setup Guide](./docs/SETUP.md) - Installation and configuration
-- [API Reference](./docs/API.md) - Current endpoints (health check)
+This repository represents the **design and conceptual foundation** for the Vi-Notes system.
 
 ---
 
