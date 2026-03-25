@@ -33,8 +33,6 @@ const generateToken = (userId: string, email: string): string => {
   const tokenOptions: SignOptions = { expiresIn: JWT_EXPIRE as any };
   const secret = getJWTSecret();
   
-  console.log(`🔑 Generating JWT token with SECRET: ${secret.substring(0, 20)}... (length: ${secret.length})`);
-  
   return jwt.sign(
     tokenPayload,
     secret,

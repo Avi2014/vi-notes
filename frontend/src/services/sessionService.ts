@@ -21,12 +21,8 @@ const sessionAPI = axios.create({
  */
 sessionAPI.interceptors.request.use((config) => {
   const token = localStorage.getItem('authToken');
-  console.log(`🔐 Session API token check:`, token ? `Found (${token.substring(0, 20)}...)` : 'Not found');
   if (token) {
     config.headers['Authorization'] = `Bearer ${token}`;
-    console.log(`✓ Authorization header set for session request`);
-  } else {
-    console.warn(`❌ No token found in localStorage for session request`);
   }
   return config;
 });

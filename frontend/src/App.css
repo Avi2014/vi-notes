@@ -1,10 +1,16 @@
 /* Global App Styles */
 
 :root {
+  /* Dark Minimalist Palette */
+  --bg-dark: #1A202C;
+  --bg-dark-secondary: #2D3748;
+  --text-primary: #F7FAFC;
+  --text-secondary: #CBD5E0;
+  --text-muted: #A0AEC0;
+  --border-color: #4A5568;
+  /* Keep accent for compatibility, update as needed */
   --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   --secondary-color: #2c3e50;
-  --border-color: #e0e0e0;
-  --text-light: #7f8c8d;
   --bg-light: #ecf0f1;
 }
 
@@ -14,12 +20,37 @@
   box-sizing: border-box;
 }
 
+/* Scroll Animation Keyframes */
+@keyframes fadeInScaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Animation utility class */
+.animation-fade-in {
+  animation: fadeInScaleUp 0.6s ease-out forwards;
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .animation-fade-in {
+    animation: none;
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 html,
 body,
 #root {
   width: 100%;
   height: 100%;
-  overflow: hidden;
 }
 
 body {
@@ -28,6 +59,13 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Modern Headlines with Poppins */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.5px;
 }
 
 .app {
@@ -39,7 +77,8 @@ body {
 
 .editor-page {
   width: 100%;
-  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Smooth transitions */

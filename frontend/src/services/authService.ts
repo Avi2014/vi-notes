@@ -52,9 +52,7 @@ authAPI.interceptors.response.use(
  */
 export const registerUser = async (email: string, password: string) => {
   try {
-    console.log(`📤 Registering user: ${email}`);
     const response = await authAPI.post('/register', { email, password });
-    console.log('✅ Registration successful');
     return response.data.data; // Extract the data property from response
   } catch (error: any) {
     console.error('❌ Registration failed:', error.message);
@@ -75,9 +73,7 @@ export const registerUser = async (email: string, password: string) => {
  */
 export const loginUser = async (email: string, password: string) => {
   try {
-    console.log(`📤 Logging in user: ${email}`);
     const response = await authAPI.post('/login', { email, password });
-    console.log('✅ Login successful');
     return response.data.data; // Extract the data property from response
   } catch (error: any) {
     console.error('❌ Login failed:', error.message);

@@ -6,7 +6,7 @@
   justify-content: center;
   min-height: 100vh;
   padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #1A202C;
 }
 
 .auth-card {
@@ -34,7 +34,9 @@
   font-size: 28px;
   color: #333;
   margin: 0 0 10px 0;
-  font-weight: 600;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  letter-spacing: -0.5px;
 }
 
 .auth-subtitle {

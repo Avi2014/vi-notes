@@ -1,7 +1,7 @@
 .editor-page {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
 }
 
 .editor-header {
@@ -9,16 +9,16 @@
   justify-content: space-between;
   align-items: center;
   padding: 15px 20px;
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #e0e0e0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background-color: #1A202C;
+  border-bottom: 1px solid #4A5568;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .editor-header h1 {
   margin: 0;
   font-size: 24px;
   font-weight: 600;
-  color: #333;
+  color: #F7FAFC;
 }
 
 .editor-header-right {
@@ -45,7 +45,7 @@
 
 .user-email {
   font-size: 14px;
-  color: #666;
+  color: #CBD5E0;
   font-weight: 500;
 }
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { getSessions, deleteSession, Session } from '../services/sessionService';
@@ -24,6 +24,7 @@ export const DashboardPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalSessions, setTotalSessions] = useState(0);
   const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
 
   const SESSIONS_PER_PAGE = 10;
 
@@ -56,6 +57,41 @@ export const DashboardPage: React.FC = () => {
   useEffect(() => {
     fetchSessions();
   }, [fetchSessions]);
+
+  /**
+   * Setup scroll animation for session cards
+   */
+  useEffect(() => {
+    if (!gridRef.current) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, index) => {
+        if (entry.isIntersecting) {
+          // Add staggered animation delay
+          const delay = index * 50;
+          setTimeout(() => {
+            entry.target.classList.add('animation-fade-in');
+          }, delay);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    });
+
+    // Observe all session cards
+    const cards = gridRef.current.querySelectorAll('.session-card');
+    cards.forEach((card) => {
+      // Start with opacity 0 for animation
+      (card as HTMLElement).style.opacity = '0';
+      observer.observe(card);
+    });
+
+    return () => {
+      cards.forEach((card) => observer.unobserve(card));
+    };
+  }, [sessions]);
 
   /**
    * Handle session deletion
@@ -176,7 +212,7 @@ export const DashboardPage: React.FC = () => {
         </div>
       ) : (
         <>
-          <div className="sessions-grid">
+          <div className="sessions-grid" ref={gridRef}>
             {sessions.map((session) => (
               <div
                 key={session.sessionId}

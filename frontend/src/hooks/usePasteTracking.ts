@@ -27,7 +27,6 @@ export const usePasteTracking = (sessionId?: string) => {
     // Check if user is authenticated - don't submit if no token
     const token = localStorage.getItem('authToken');
     if (!token) {
-      console.log('⏭️ Skipping paste submission (not authenticated)');
       eventsBuffer.current = []; // Clear buffer
       return;
     }
@@ -37,7 +36,6 @@ export const usePasteTracking = (sessionId?: string) => {
 
     try {
       await submitPasteEvents(sessionId, eventsCopy);
-      console.log(`✓ Submitted ${eventsCopy.length} paste events`);
     } catch (error) {
       console.error('Failed to submit paste events:', error);
       // Re-add events to buffer on failure (with limit to prevent overflow)
@@ -79,8 +77,6 @@ export const usePasteTracking = (sessionId?: string) => {
 
     // Add to buffer
     eventsBuffer.current.push(pasteEvent);
-
-    console.log(`📋 Detected paste: ${pastedText.length} chars, multiline: ${pasteEvent.isMultiline}`);
 
     // Check if we should submit
     if (eventsBuffer.current.length >= BATCH_SIZE) {

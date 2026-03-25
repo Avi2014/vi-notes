@@ -28,7 +28,6 @@ export const useKeystrokeTracking = (sessionId?: string) => {
     // Check if user is authenticated - don't submit if no token
     const token = localStorage.getItem('authToken');
     if (!token) {
-      console.log('⏭️ Skipping keystroke submission (not authenticated)');
       eventsBuffer.current = []; // Clear buffer
       return;
     }
@@ -38,7 +37,6 @@ export const useKeystrokeTracking = (sessionId?: string) => {
 
     try {
       await submitKeystrokeEvents(sessionId, eventsCopy);
-      console.log(`✓ Submitted ${eventsCopy.length} keystroke events`);
     } catch (error) {
       console.error('Failed to submit keystroke events:', error);
       // Re-add events to buffer on failure (with limit to prevent overflow)

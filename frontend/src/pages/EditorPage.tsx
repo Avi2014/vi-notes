@@ -16,6 +16,10 @@ import './EditorPage.css';
  * - Text editor with save functionality
  * - Save session to database
  */
+interface EditorPageState {
+  sessionId: string;
+}
+
 export const EditorPage: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -25,11 +29,10 @@ export const EditorPage: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const editorContentRef = useRef<string>('');
-  const sessionIdRef = useRef<string>('');
+  const sessionIdRef = useRef<string>(`session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
 
   const handleSave = async (content: string) => {
     editorContentRef.current = content;
-    sessionIdRef.current = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     setSessionTitle('');
     setSessionDescription('');
     setError(null);
@@ -50,9 +53,7 @@ export const EditorPage: React.FC = () => {
         sessionId: sessionIdRef.current,
         title: sessionTitle,
         description: sessionDescription,
-        content: editorContentRef.current,
-        pasteCount: 0,
-        keystrokeCount: 0
+        content: editorContentRef.current
       });
 
       setIsSaveModalOpen(false);
@@ -87,7 +88,7 @@ export const EditorPage: React.FC = () => {
           </button>
         </div>
       </header>
-      <TextEditor onSave={handleSave} />
+      <TextEditor onSave={handleSave} sessionId={sessionIdRef.current} />
 
       {/* Save Session Modal */}
       {isSaveModalOpen && (

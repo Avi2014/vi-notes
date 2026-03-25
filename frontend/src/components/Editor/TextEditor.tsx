@@ -5,6 +5,7 @@ import './TextEditor.css';
 
 interface TextEditorProps {
   onSave?: (content: string) => void;
+  sessionId?: string;
 }
 
 /**
@@ -17,16 +18,16 @@ interface TextEditorProps {
  * - Responsive design
  * - No formatting options (clean writing space)
  */
-export const TextEditor: React.FC<TextEditorProps> = ({ onSave }) => {
+export const TextEditor: React.FC<TextEditorProps> = ({ onSave, sessionId }) => {
   const [content, setContent] = useState<string>('');
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [pasteCount, setPasteCount] = useState<number>(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   
-  // Generate unique session ID for this editing session
+  // Use provided sessionId or generate one
   const sessionIdRef = useRef<string>(
-    `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    sessionId || `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
   );
   
   // Initialize keystroke tracking
@@ -53,7 +54,6 @@ export const TextEditor: React.FC<TextEditorProps> = ({ onSave }) => {
     const pastedText = event.clipboardData?.getData('text') || '';
     if (pastedText.length > 0) {
       setPasteCount(prev => prev + 1);
-      console.log(`✅ Paste detected and tracked! Total pastes: ${pasteCount + 1}`);
     }
   }, [pasteCount]);
 

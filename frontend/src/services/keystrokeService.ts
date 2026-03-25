@@ -23,9 +23,6 @@ keystrokeAPI.interceptors.request.use((config) => {
   const token = localStorage.getItem('authToken');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
-    console.log('✓ JWT token attached to keystroke request');
-  } else {
-    console.warn('⚠️ No JWT token found in localStorage for keystroke request');
   }
   return config;
 });
