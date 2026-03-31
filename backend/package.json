@@ -1,9 +1,8 @@
 {
   "name": "vi-notes-backend",
   "version": "0.1.0",
-  "type": "module",
   "scripts": {
-    "dev": "nodemon --exec node --loader ts-node/esm src/server.ts",
+    "dev": "nodemon --exec node -r ts-node/register src/server.ts",
     "start": "node dist/server.js",
     "build": "tsc",
     "lint": "eslint . --ext ts --report-unused-disable-directives --max-warnings 0"

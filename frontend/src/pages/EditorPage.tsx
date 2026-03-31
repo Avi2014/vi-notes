@@ -16,9 +16,6 @@ import './EditorPage.css';
  * - Text editor with save functionality
  * - Save session to database
  */
-interface EditorPageState {
-  sessionId: string;
-}
 
 export const EditorPage: React.FC = () => {
   const { user, logout } = useAuth();

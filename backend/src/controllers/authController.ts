@@ -1,11 +1,11 @@
-import { Response } from 'express';
-import jwt, { SignOptions } from 'jsonwebtoken';
-import User from '../models/User.js';
-import { AuthenticatedRequest } from '../middleware/authMiddleware.js';
+import { Response } from "express";
+import jwt, { SignOptions } from "jsonwebtoken";
+import User from "../models/User";
+import { AuthenticatedRequest } from "../middleware/authMiddleware";
 
 /**
  * Auth Controller
- * 
+ *
  * Handles user registration, login, and authentication operations
  */
 
@@ -13,14 +13,14 @@ import { AuthenticatedRequest } from '../middleware/authMiddleware.js';
  * Get JWT Secret (lazy evaluation - read from env when needed)
  */
 const getJWTSecret = (): string => {
-  const secret = process.env.JWT_SECRET || 'your_jwt_secret_here';
+  const secret = process.env.JWT_SECRET || "your_jwt_secret_here";
   if (!process.env.JWT_SECRET) {
     console.warn(`⚠️ JWT_SECRET not set in environment! Using default.`);
   }
   return secret;
 };
 
-const JWT_EXPIRE: string = (process.env.JWT_EXPIRE || '7d') as string;
+const JWT_EXPIRE: string = (process.env.JWT_EXPIRE || "7d") as string;
 
 /**
  * Generate JWT Token
@@ -32,19 +32,15 @@ const generateToken = (userId: string, email: string): string => {
   const tokenPayload = { userId, email };
   const tokenOptions: SignOptions = { expiresIn: JWT_EXPIRE as any };
   const secret = getJWTSecret();
-  
-  return jwt.sign(
-    tokenPayload,
-    secret,
-    tokenOptions
-  );
+
+  return jwt.sign(tokenPayload, secret, tokenOptions);
 };
 
 /**
  * User Registration
- * 
+ *
  * POST /auth/register
- * 
+ *
  * Request body:
  * {
  *   "email": "user@example.com",
@@ -53,7 +49,7 @@ const generateToken = (userId: string, email: string): string => {
  */
 export const register = async (
   req: AuthenticatedRequest,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   try {
     const { email, password } = req.body;
@@ -62,8 +58,8 @@ export const register = async (
     if (!email || !password) {
       res.status(400).json({
         success: false,
-        error: 'Email and password are required',
-        timestamp: new Date().toISOString()
+        error: "Email and password are required",
+        timestamp: new Date().toISOString(),
       });
       return;
     }
@@ -72,8 +68,8 @@ export const register = async (
     if (!email.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)) {
       res.status(400).json({
         success: false,
-        error: 'Invalid email format',
-        timestamp: new Date().toISOString()
+        error: "Invalid email format",
+        timestamp: new Date().toISOString(),
       });
       return;
     }
@@ -82,8 +78,8 @@ export const register = async (
     if (password.length < 6) {
       res.status(400).json({
         success: false,
-        error: 'Password must be at least 6 characters',
-        timestamp: new Date().toISOString()
+        error: "Password must be at least 6 characters",
+        timestamp: new Date().toISOString(),
       });
       return;
     }
@@ -93,8 +89,8 @@ export const register = async (
     if (existingUser) {
       res.status(409).json({
         success: false,
-        error: 'Email already registered',
-        timestamp: new Date().toISOString()
+        error: "Email already registered",
+        timestamp: new Date().toISOString(),
       });
       return;
     }
@@ -102,7 +98,7 @@ export const register = async (
     // Create new user
     const newUser = new User({
       email: email.toLowerCase(),
-      passwordHash: password
+      passwordHash: password,
     });
 
     // Save user (password will be hashed by pre-save middleware)
@@ -118,26 +114,26 @@ export const register = async (
         token,
         user: {
           id: newUser._id,
-          email: newUser.email
-        }
+          email: newUser.email,
+        },
       },
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
-    console.error('Registration error:', error);
+    console.error("Registration error:", error);
     res.status(500).json({
       success: false,
-      error: error.message || 'Registration failed',
-      timestamp: new Date().toISOString()
+      error: error.message || "Registration failed",
+      timestamp: new Date().toISOString(),
     });
   }
 };
 
 /**
  * User Login
- * 
+ *
  * POST /auth/login
- * 
+ *
  * Request body:
  * {
  *   "email": "user@example.com",
@@ -146,7 +142,7 @@ export const register = async (
  */
 export const login = async (
   req: AuthenticatedRequest,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   try {
     const { email, password } = req.body;
@@ -155,22 +151,22 @@ export const login = async (
     if (!email || !password) {
       res.status(400).json({
         success: false,
-        error: 'Email and password are required',
-        timestamp: new Date().toISOString()
+        error: "Email and password are required",
+        timestamp: new Date().toISOString(),
       });
       return;
     }
 
     // Find user by email and select passwordHash (it's hidden by default)
     const user = await User.findOne({ email: email.toLowerCase() }).select(
-      '+passwordHash'
+      "+passwordHash",
     );
 
     if (!user) {
       res.status(401).json({
         success: false,
-        error: 'Invalid email or password',
-        timestamp: new Date().toISOString()
+        error: "Invalid email or password",
+        timestamp: new Date().toISOString(),
       });
       return;
     }
@@ -181,8 +177,8 @@ export const login = async (
     if (!isPasswordValid) {
       res.status(401).json({
         success: false,
-        error: 'Invalid email or password',
-        timestamp: new Date().toISOString()
+        error: "Invalid email or password",
+        timestamp: new Date().toISOString(),
       });
       return;
     }
@@ -197,37 +193,37 @@ export const login = async (
         token,
         user: {
           id: user._id,
-          email: user.email
-        }
+          email: user.email,
+        },
       },
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
-    console.error('Login error:', error);
+    console.error("Login error:", error);
     res.status(500).json({
       success: false,
-      error: error.message || 'Login failed',
-      timestamp: new Date().toISOString()
+      error: error.message || "Login failed",
+      timestamp: new Date().toISOString(),
     });
   }
 };
 
 /**
  * Get Current User
- * 
+ *
  * GET /auth/me
  * Requires: Valid JWT token in Authorization header
  */
 export const getCurrentUser = async (
   req: AuthenticatedRequest,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   try {
     if (!req.user) {
       res.status(401).json({
         success: false,
-        error: 'Not authenticated',
-        timestamp: new Date().toISOString()
+        error: "Not authenticated",
+        timestamp: new Date().toISOString(),
       });
       return;
     }
@@ -238,8 +234,8 @@ export const getCurrentUser = async (
     if (!user) {
       res.status(404).json({
         success: false,
-        error: 'User not found',
-        timestamp: new Date().toISOString()
+        error: "User not found",
+        timestamp: new Date().toISOString(),
       });
       return;
     }
@@ -250,17 +246,17 @@ export const getCurrentUser = async (
         user: {
           id: user._id,
           email: user.email,
-          createdAt: user.createdAt
-        }
+          createdAt: user.createdAt,
+        },
       },
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
-    console.error('Get user error:', error);
+    console.error("Get user error:", error);
     res.status(500).json({
       success: false,
-      error: error.message || 'Failed to get user',
-      timestamp: new Date().toISOString()
+      error: error.message || "Failed to get user",
+      timestamp: new Date().toISOString(),
     });
   }
 };

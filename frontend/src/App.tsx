@@ -8,20 +8,7 @@ import { RegisterPage } from './pages/RegisterPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { SessionDetailPage } from './pages/SessionDetailPage';
 
-/**
- * App Component
- * 
- * Root component for the Vi-Notes application.
- * Provides authentication context and routing for all pages.
- * 
- * Routes:
- * - /: Home - redirects to /login (unauthenticated) or /editor (authenticated)
- * - /login: Login page (public)
- * - /register: Registration page (public)
- * - /editor: Text editor page (protected)
- * - /dashboard: Sessions dashboard (protected)
- * - /session/:sessionId: Session detail view (protected)
- */
+
 function App() {
   return (
     <BrowserRouter>

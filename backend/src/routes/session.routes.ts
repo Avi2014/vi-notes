@@ -1,12 +1,15 @@
-import { Router, Response } from 'express';
-import Session from '../models/Session.js';
-import KeystrokeEvent from '../models/KeystrokeEvent.js';
-import PasteEvent from '../models/PasteEvent.js';
-import { authMiddleware, AuthenticatedRequest } from '../middleware/authMiddleware.js';
+import { Router, Response } from "express";
+import Session from "../models/Session";
+import KeystrokeEvent from "../models/KeystrokeEvent";
+import PasteEvent from "../models/PasteEvent";
+import {
+  authMiddleware,
+  AuthenticatedRequest,
+} from "../middleware/authMiddleware";
 
 /**
  * Session Management Routes
- * 
+ *
  * POST   /api/sessions              - Create new session (protected)
  * GET    /api/sessions              - List all sessions for user (protected)
  * GET    /api/sessions/:sessionId   - Get session details (protected)
@@ -19,9 +22,9 @@ const router = Router();
 
 /**
  * POST /api/sessions
- * 
+ *
  * Create a new writing session
- * 
+ *
  * Request body:
  * {
  *   "sessionId": "session-123456-abc",
@@ -33,18 +36,25 @@ const router = Router();
  * }
  */
 router.post(
-  '/',
+  "/",
   authMiddleware,
   async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
-      const { sessionId, title, description, content, pasteCount, keystrokeCount } = req.body;
+      const {
+        sessionId,
+        title,
+        description,
+        content,
+        pasteCount,
+        keystrokeCount,
+      } = req.body;
       const userId = req.user?.userId;
 
       // Validation
       if (!userId) {
         res.status(401).json({
           success: false,
-          error: 'User not authenticated'
+          error: "User not authenticated",
         });
         return;
       }
@@ -52,7 +62,7 @@ router.post(
       if (!sessionId || !title || content === undefined) {
         res.status(400).json({
           success: false,
-          error: 'sessionId, title, and content are required'
+          error: "sessionId, title, and content are required",
         });
         return;
       }
@@ -60,7 +70,7 @@ router.post(
       if (title.length > 200) {
         res.status(400).json({
           success: false,
-          error: 'Title must be 200 characters or less'
+          error: "Title must be 200 characters or less",
         });
         return;
       }
@@ -77,14 +87,14 @@ router.post(
         userId,
         sessionId,
         title,
-        description: description || '',
+        description: description || "",
         content,
         wordCount,
         characterCount,
         pasteCount: pasteCount || 0,
         keystrokeCount: keystrokeCount || 0,
         startedAt: new Date(),
-        endedAt: new Date()
+        endedAt: new Date(),
       });
 
       await newSession.save();
@@ -97,30 +107,30 @@ router.post(
           title: newSession.title,
           wordCount: newSession.wordCount,
           characterCount: newSession.characterCount,
-          createdAt: newSession.createdAt
+          createdAt: newSession.createdAt,
         },
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     } catch (error: any) {
-      console.error('Session creation error:', error);
+      console.error("Session creation error:", error);
       res.status(500).json({
         success: false,
-        error: error.message || 'Failed to create session'
+        error: error.message || "Failed to create session",
       });
     }
-  }
+  },
 );
 
 /**
  * GET /api/sessions
- * 
+ *
  * Get all sessions for authenticated user
- * 
+ *
  * Query parameters:
  * - skip: Number of sessions to skip (for pagination)
  * - limit: Maximum sessions to return (default: 20, max: 100)
  * - search: Search in session title or description
- * 
+ *
  * Response:
  * {
  *   "success": true,
@@ -145,19 +155,22 @@ router.post(
  * }
  */
 router.get(
-  '/',
+  "/",
   authMiddleware,
   async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
       const userId = req.user?.userId;
       const skip = Math.max(0, parseInt(req.query.skip as string) || 0);
-      const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 20));
-      const search = (req.query.search as string) || '';
+      const limit = Math.min(
+        100,
+        Math.max(1, parseInt(req.query.limit as string) || 20),
+      );
+      const search = (req.query.search as string) || "";
 
       if (!userId) {
         res.status(401).json({
           success: false,
-          error: 'User not authenticated'
+          error: "User not authenticated",
         });
         return;
       }
@@ -166,8 +179,8 @@ router.get(
       const query: any = { userId };
       if (search) {
         query.$or = [
-          { title: { $regex: search, $options: 'i' } },
-          { description: { $regex: search, $options: 'i' } }
+          { title: { $regex: search, $options: "i" } },
+          { description: { $regex: search, $options: "i" } },
         ];
       }
 
@@ -179,7 +192,9 @@ router.get(
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
-        .select('sessionId title description wordCount characterCount pasteCount keystrokeCount createdAt');
+        .select(
+          "sessionId title description wordCount characterCount pasteCount keystrokeCount createdAt",
+        );
 
       res.json({
         success: true,
@@ -193,31 +208,31 @@ router.get(
             characterCount: session.characterCount,
             pasteCount: session.pasteCount,
             keystrokeCount: session.keystrokeCount,
-            createdAt: session.createdAt
+            createdAt: session.createdAt,
           })),
           total,
           skip,
-          limit
+          limit,
         },
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     } catch (error: any) {
-      console.error('Failed to fetch sessions:', error);
+      console.error("Failed to fetch sessions:", error);
       res.status(500).json({
         success: false,
-        error: 'Failed to fetch sessions'
+        error: "Failed to fetch sessions",
       });
     }
-  }
+  },
 );
 
 /**
  * GET /api/sessions/:sessionId
- * 
+ *
  * Get detailed information about a specific session
  */
 router.get(
-  '/:sessionId',
+  "/:sessionId",
   authMiddleware,
   async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
@@ -227,7 +242,7 @@ router.get(
       if (!userId) {
         res.status(401).json({
           success: false,
-          error: 'User not authenticated'
+          error: "User not authenticated",
         });
         return;
       }
@@ -237,7 +252,7 @@ router.get(
       if (!session) {
         res.status(404).json({
           success: false,
-          error: 'Session not found'
+          error: "Session not found",
         });
         return;
       }
@@ -256,27 +271,27 @@ router.get(
           keystrokeCount: session.keystrokeCount,
           startedAt: session.startedAt,
           endedAt: session.endedAt,
-          createdAt: session.createdAt
+          createdAt: session.createdAt,
         },
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     } catch (error: any) {
-      console.error('Session fetch error:', error);
+      console.error("Session fetch error:", error);
       res.status(500).json({
         success: false,
-        error: 'Failed to fetch session'
+        error: "Failed to fetch session",
       });
     }
-  }
+  },
 );
 
 /**
  * PUT /api/sessions/:sessionId
- * 
+ *
  * Update a session (title, description, content)
  */
 router.put(
-  '/:sessionId',
+  "/:sessionId",
   authMiddleware,
   async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
@@ -287,7 +302,7 @@ router.put(
       if (!userId) {
         res.status(401).json({
           success: false,
-          error: 'User not authenticated'
+          error: "User not authenticated",
         });
         return;
       }
@@ -297,7 +312,7 @@ router.put(
       if (!session) {
         res.status(404).json({
           success: false,
-          error: 'Session not found'
+          error: "Session not found",
         });
         return;
       }
@@ -307,7 +322,7 @@ router.put(
         if (title.length > 200) {
           res.status(400).json({
             success: false,
-            error: 'Title must be 200 characters or less'
+            error: "Title must be 200 characters or less",
           });
           return;
         }
@@ -337,27 +352,27 @@ router.put(
           sessionId: session.sessionId,
           title: session.title,
           wordCount: session.wordCount,
-          characterCount: session.characterCount
+          characterCount: session.characterCount,
         },
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     } catch (error: any) {
-      console.error('Session update error:', error);
+      console.error("Session update error:", error);
       res.status(500).json({
         success: false,
-        error: 'Failed to update session'
+        error: "Failed to update session",
       });
     }
-  }
+  },
 );
 
 /**
  * DELETE /api/sessions/:sessionId
- * 
+ *
  * Delete a session and cascade delete related keystroke/paste events
  */
 router.delete(
-  '/:sessionId',
+  "/:sessionId",
   authMiddleware,
   async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
@@ -367,7 +382,7 @@ router.delete(
       if (!userId) {
         res.status(401).json({
           success: false,
-          error: 'User not authenticated'
+          error: "User not authenticated",
         });
         return;
       }
@@ -377,7 +392,7 @@ router.delete(
       if (!session) {
         res.status(404).json({
           success: false,
-          error: 'Session not found'
+          error: "Session not found",
         });
         return;
       }
@@ -392,28 +407,28 @@ router.delete(
       res.json({
         success: true,
         data: {
-          message: 'Session deleted successfully',
-          sessionId: sessionId
+          message: "Session deleted successfully",
+          sessionId: sessionId,
         },
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     } catch (error: any) {
-      console.error('Session deletion error:', error);
+      console.error("Session deletion error:", error);
       res.status(500).json({
         success: false,
-        error: 'Failed to delete session'
+        error: "Failed to delete session",
       });
     }
-  }
+  },
 );
 
 /**
  * GET /api/sessions/:sessionId/stats
- * 
+ *
  * Get detailed statistics for a session including keystroke/paste breakdown
  */
 router.get(
-  '/:sessionId/stats',
+  "/:sessionId/stats",
   authMiddleware,
   async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
@@ -423,7 +438,7 @@ router.get(
       if (!userId) {
         res.status(401).json({
           success: false,
-          error: 'User not authenticated'
+          error: "User not authenticated",
         });
         return;
       }
@@ -433,7 +448,7 @@ router.get(
       if (!session) {
         res.status(404).json({
           success: false,
-          error: 'Session not found'
+          error: "Session not found",
         });
         return;
       }
@@ -450,14 +465,19 @@ router.get(
         interKeystrokeIntervals.length > 0
           ? Math.round(
               interKeystrokeIntervals.reduce((a, b) => a + b, 0) /
-                interKeystrokeIntervals.length
+                interKeystrokeIntervals.length,
             )
           : 0;
 
       // Calculate paste statistics
-      const totalPastedChars = pasteEvents.reduce((sum, e) => sum + e.pastedLength, 0);
+      const totalPastedChars = pasteEvents.reduce(
+        (sum, e) => sum + e.pastedLength,
+        0,
+      );
       const avgPasteLength =
-        pasteEvents.length > 0 ? Math.round(totalPastedChars / pasteEvents.length) : 0;
+        pasteEvents.length > 0
+          ? Math.round(totalPastedChars / pasteEvents.length)
+          : 0;
 
       res.json({
         success: true,
@@ -469,31 +489,34 @@ router.get(
             characterCount: session.characterCount,
             duration:
               session.endedAt && session.startedAt
-                ? Math.floor((session.endedAt.getTime() - session.startedAt.getTime()) / 1000) + 's'
-                : 'N/A'
+                ? Math.floor(
+                    (session.endedAt.getTime() - session.startedAt.getTime()) /
+                      1000,
+                  ) + "s"
+                : "N/A",
           },
           keystrokes: {
             total: keystrokeEvents.length,
-            avgInterval: avgInterKeystrokeInterval + 'ms',
-            eventCount: keystrokeEvents.length
+            avgInterval: avgInterKeystrokeInterval + "ms",
+            eventCount: keystrokeEvents.length,
           },
           pastes: {
             total: pasteEvents.length,
             totalChars: totalPastedChars,
             avgLength: avgPasteLength,
-            multilineCount: pasteEvents.filter((e) => e.isMultiline).length
-          }
+            multilineCount: pasteEvents.filter((e) => e.isMultiline).length,
+          },
         },
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     } catch (error: any) {
-      console.error('Session stats error:', error);
+      console.error("Session stats error:", error);
       res.status(500).json({
         success: false,
-        error: 'Failed to fetch session statistics'
+        error: "Failed to fetch session statistics",
       });
     }
-  }
+  },
 );
 
 export default router;
